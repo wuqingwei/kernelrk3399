@@ -1,0 +1,92 @@
+/dts-v1/;
+#include "rk3399-roc-pc-plus.dtsi"
+
+/ {
+	model = "Firefly ROC-RK3399-PC-PLUS and ROC-RK3399-PC-Pro EDP";
+	compatible = "firefly,roc-rk3399-pc", "rockchip,rk3399";
+
+	edp_panel: edp-panel {
+        compatible = "simple-panel";
+        bus-format = <MEDIA_BUS_FMT_RGB666_1X18>;
+        backlight = <&backlight>;
+
+		enable-gpios = <&gpio2 5 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+	    pinctrl-0 = <&lcd_panel_enable>;
+
+        display-timings {
+            native-mode = <&timing0>;
+
+            timing0: timing0 {
+                clock-frequency = <200000000>;
+                hactive = <2560>;
+                vactive = <1600>;
+                hfront-porch = <48>;
+                hsync-len = <80>;
+                hback-porch = <32>;
+                vfront-porch = <2>;
+                vsync-len = <39>;
+                vback-porch = <5>;
+                hsync-active = <0>;
+                vsync-active = <0>;
+                de-active = <0>;
+                pixelclk-active = <0>;
+            };
+        };
+
+        ports {
+            panel_in_edp: endpoint {
+                remote-endpoint = <&edp_in_vopb>;
+            };
+        };
+    };
+};
+
+/*这里注释拉enable引脚，因为eDP和mipi共用拉，enable引脚。又因为
+        背光电路驱动backlight驱动没有引脚占用检测功能，所有如果不注释会冲突报错
+    */
+&backlight {
+    pwms = <&pwm0 0 25000 0>;
+    //enable-gpios = <&gpio1 24 GPIO_ACTIVE_HIGH>;
+    // pinctrl-names = "default";
+    // pinctrl-0 = <&lcd_backlight_enable>;
+};
+
+
+&edp {
+    status = "okay";
+    pinctrl-names = "default";
+    pinctrl-0 = <&edp_hpd>;
+
+    hpd-gpios = <&gpio1 20 GPIO_ACTIVE_LOW>;
+
+    ports {
+        edp_out: port@1 {
+            reg = <1>;
+            #address-cells = <1>;
+            #size-cells = <0>;
+
+            edp_out_panel: endpoint@0 {
+                reg = <0>;
+                remote-endpoint = <&panel_in_edp>;
+            };
+        };
+    };
+
+};
+//GPIO1_C4  16+4
+&edp_hpd {
+    rockchip,pins = <1 20 RK_FUNC_2 &pcfg_pull_none>;
+};
+
+
+&pinctrl {
+	edp {
+        lcd_panel_enable: lcd-panel-enable {
+            rockchip,pins = <2 5 RK_FUNC_GPIO &pcfg_pull_up>;
+        };
+        lcd_edp_hpd_enable: lcd-edp-hpd-enable{
+            rockchip,pins = <1 20 RK_FUNC_GPIO &pcfg_pull_up>;
+        };
+    };
+};

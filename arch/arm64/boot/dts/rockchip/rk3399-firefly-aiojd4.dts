@@ -1,0 +1,12 @@
+/dts-v1/;
+
+#include "rk3399-firefly-aiojd4.dtsi"
+
+/ {
+	model = "AIO-3399-JD4 Board (Linux Opensource)";
+	compatible = "rockchip,rk3399-firefly", "rockchip,rk3399";
+};
+
+&usbdrd_dwc3_0 {
+    dr_mode = "host";
+};

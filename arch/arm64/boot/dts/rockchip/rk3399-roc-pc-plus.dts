@@ -1,0 +1,8 @@
+/dts-v1/;
+
+#include "rk3399-roc-pc-plus.dtsi"
+
+/ {
+	model = "Firefly ROC-RK3399-PC-PLUS and ROC-RK3399-PC-Pro";
+	compatible = "firefly,roc-rk3399-pc", "rockchip,rk3399";
+};

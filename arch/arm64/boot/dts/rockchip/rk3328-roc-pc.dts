@@ -1,0 +1,15 @@
+/dts-v1/;
+#include "rk3328-roc-pc.dtsi"
+
+&fiq_debugger {
+	status = "disabled";
+};
+
+&wireless_bluetooth {
+	status = "okay";
+};
+
+&uart2 {
+	dma-names = "tx", "rx";
+	status = "okay";
+};

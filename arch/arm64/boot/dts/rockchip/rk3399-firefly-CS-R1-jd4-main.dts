@@ -1,0 +1,619 @@
+/dts-v1/;
+
+#include "rk3399-firefly-port.dtsi"
+#include <dt-bindings/sensor-dev.h>
+
+#define PCA955_I2C_CLK 100000
+
+/ {
+	model = "CS-R1-3399JD4-MAIN Board (Linux Opensource)";
+	compatible = "rockchip,rk3399-firefly", "rockchip,rk3399";
+
+	/delete-node/ gpio-keys;
+	/delete-node/ wireless-wlan;
+	/delete-node/ wireless-bluetooth;
+	/delete-node/ external-gmac-clock;
+	test-power {
+		status = "okay";
+	};
+
+	adb-select {
+		status = "okay";
+		compatible = "firefly,adb-select";
+		adb-sel-gpio = <&gpio1 24 GPIO_ACTIVE_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&adb_sel>;
+	};
+
+	sata_led: sata-led {
+		 compatible = "regulator-fixed";
+		 enable-active-high;
+		 gpio = <&gpio1 1 GPIO_ACTIVE_HIGH>;
+		 pinctrl-names = "default";
+		 pinctrl-0 = <&sata_sel>;
+		 regulator-name = "sata_led";
+		 regulator-always-on;
+		 status = "okay";
+
+	 };
+
+	wdt_pwr: wdt-pwr {
+		compatible = "regulator-fixed";
+		enable-active-high;
+		gpio = <&gpio1 11 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&wdt_pwr_pin>;
+		regulator-name = "wdt_pwr";
+		regulator-always-on;
+		status = "okay";
+	};
+
+	usb_net: usb-net {
+		compatible = "regulator-fixed";
+		enable-active-high;
+		gpio = <&gpio4 0 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&usb_net_ctl>;
+		regulator-name = "usb_net";
+		regulator-always-on;
+		status = "okay";
+	};
+
+	pca9555_rst: pca9555-rst {
+		compatible = "regulator-fixed";
+		enable-active-low;
+		gpio = <&gpio2 3 GPIO_ACTIVE_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pca9555_rst_pin>;
+		regulator-name = "pca5555_rst";
+		regulator-always-on;
+		status = "disabled";
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		//子板的reset脚，写0会reset子板
+		RESET_SUB1 {
+			gpios = <&gpio3 24 GPIO_ACTIVE_HIGH>;	//GPIO3_D0 96+24
+			default-state = "off";
+			retain-state-shutdown;
+		};
+
+		RESET_SUB2 {
+			gpios = <&gpio3 27 GPIO_ACTIVE_HIGH>;	//GPIO3_D3 96+24+3
+			default-state = "off";
+			retain-state-shutdown;
+		};
+
+		RESET_SUB3 {
+			gpios = <&gpio3 29 GPIO_ACTIVE_HIGH>;	//GPIO3_D5 96+24+5
+			default-state = "off";
+			retain-state-shutdown;
+		};
+
+		RESET_SUB4 {
+			gpios = <&gpio0 4 GPIO_ACTIVE_HIGH>;	//GPIO0_A4 0+4
+			default-state = "off";
+			retain-state-shutdown;
+		};
+
+		RESET_SUB5 {
+			gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;	//GPIO0_A6 0+6
+			default-state = "off";
+			retain-state-shutdown;
+		};
+
+		RESET_SUB6 {
+			gpios = <&gpio2 23 GPIO_ACTIVE_HIGH>;	//GPIO2_C7 32*2+16+7
+			default-state = "off";
+			retain-state-shutdown;
+		};
+
+		RESET_SUB7 {
+			gpios = <&gpio2 21 GPIO_ACTIVE_HIGH>;	//GPIO2_C5 32*2+16+5
+			default-state = "off";
+			retain-state-shutdown;
+		};
+
+		RESET_SUB8 {
+			gpios = <&gpio2 22 GPIO_ACTIVE_HIGH>;	//GPIO2_C6 32*2+16+6
+			default-state = "off";
+			retain-state-shutdown;
+		};
+
+		RESET_SUB9 {
+			gpios = <&gpio3 30 GPIO_ACTIVE_HIGH>;	//GPIO3_D6 32*2+24+6
+			default-state = "off";
+			retain-state-shutdown;
+		};
+
+		RESET_SUB10 {
+			gpios = <&gpio2 20 GPIO_ACTIVE_HIGH>;	//GPIO2_C4 32*2+16+4
+			default-state = "off";
+			retain-state-shutdown;
+		};
+
+		//SPI FLASH的电源脚
+		SPI_FLASH_PWR1 {
+			gpios = <&gpio4 4 GPIO_ACTIVE_HIGH>;	//SPI_FLASH_PWR1 GPIO4_A4	128+4		=132
+			default-state = "off";
+		};
+
+		SPI_FLASH_PWR2 {
+			gpios = <&gpio4 5 GPIO_ACTIVE_HIGH>;	//SPI_FLASH_PWR2 GPIO4_A5	128+5		=133
+			default-state = "off";
+		};
+
+		SPI_FLASH_PWR3 {
+			gpios = <&gpio4 22 GPIO_ACTIVE_HIGH>;	//SPI_FLASH_PWR3 GPIO4_C6	128+16+6		=150
+			default-state = "off";
+		};
+
+		SPI_FLASH_PWR4 {
+			gpios = <&gpio4 6 GPIO_ACTIVE_HIGH>;	//SPI_FLASH_PWR4 GPIO4_A6	128+6		=134
+			default-state = "off";
+		};
+
+		SPI_FLASH_PWR5 {
+			gpios = <&gpio4 7 GPIO_ACTIVE_HIGH>;	//SPI_FLASH_PWR5 GPIO4_A7	128+7		=135
+			default-state = "off";
+		};
+
+		SPI_FLASH_PWR6 {
+			gpios = <&gpio2 28 GPIO_ACTIVE_HIGH>;	//SPI_FLASH_PWR6 GPIO2_D4	64+24+4		=92
+			default-state = "off";
+		};
+
+		SPI_FLASH_PWR7 {
+			gpios = <&gpio4 3 GPIO_ACTIVE_HIGH>;	//SPI_FLASH_PWR7 GPIO4_A3	128+3		=131
+			default-state = "off";
+		};
+
+		SPI_FLASH_PWR8 {
+			gpios = <&gpio4 28 GPIO_ACTIVE_HIGH>;	//SPI_FLASH_PWR8 GPIO4_D4	128+24+4	=156
+			default-state = "off";
+		};
+
+		SPI_FLASH_PWR9 {
+			gpios = <&gpio0 12 GPIO_ACTIVE_HIGH>;	//SPI_FLASH_PWR9 GPIO0_B4	0+8+4		=12
+			default-state = "off";
+		};
+
+		SPI_FLASH_PWR10 {
+			gpios = <&gpio1 22 GPIO_ACTIVE_HIGH>;	//SPI_FLASH_PWR10 GPIO1_C6	32+16+6		=54
+			default-state = "off";
+		};
+
+		//子板的Recovery 按键
+
+		RECOVER_IN1 {
+			gpios = <&sub_core_pca9555 PCA_IO0_0 GPIO_ACTIVE_LOW>;	//RECOVER_IN1	PCA9555	IO_00
+			default-state = "off";
+			retain-state-shutdown;
+		};
+
+		RECOVER_IN2 {
+			gpios = <&sub_core_pca9555 PCA_IO0_1 GPIO_ACTIVE_LOW>;	//RECOVER_IN2	PCA9555	IO_01
+			default-state = "off";
+			retain-state-shutdown;
+		};
+
+		RECOVER_IN3 {
+			gpios = <&sub_core_pca9555 PCA_IO0_2 GPIO_ACTIVE_LOW>;	//RECOVER_IN3	PCA9555	IO_02
+			default-state = "off";
+			retain-state-shutdown;
+		};
+
+		RECOVER_IN4 {
+			gpios = <&sub_core_pca9555 PCA_IO0_3 GPIO_ACTIVE_LOW>;	//RECOVER_IN4	PCA9555	IO_03
+			default-state = "off";
+			retain-state-shutdown;
+		};
+
+		RECOVER_IN5 {
+			gpios = <&sub_core_pca9555 PCA_IO0_4 GPIO_ACTIVE_LOW>;	//RECOVER_IN5	PCA9555	IO_04
+			default-state = "off";
+			retain-state-shutdown;
+		};
+
+		RECOVER_IN6 {
+			gpios = <&sub_core_pca9555 PCA_IO0_5 GPIO_ACTIVE_LOW>;	//RECOVER_IN6	PCA9555	IO_05
+			default-state = "off";
+			retain-state-shutdown;
+		};
+
+		RECOVER_IN7 {
+			gpios = <&sub_core_pca9555 PCA_IO1_0 GPIO_ACTIVE_LOW>;	//RECOVER_IN7	PCA9555	IO_10
+			default-state = "off";
+			retain-state-shutdown;
+		};
+
+		RECOVER_IN8 {
+			gpios = <&sub_core_pca9555 PCA_IO1_1 GPIO_ACTIVE_LOW>;	//RECOVER_IN8	PCA9555	IO_11
+			default-state = "off";
+			retain-state-shutdown;
+		};
+
+		RECOVER_IN9 {
+			gpios = <&sub_core_pca9555 PCA_IO1_2 GPIO_ACTIVE_LOW>;	//RECOVER_IN9	PCA9555	IO_12
+			default-state = "off";
+			retain-state-shutdown;
+		};
+
+		RECOVER_IN10 {
+			gpios = <&sub_core_pca9555 PCA_IO1_3 GPIO_ACTIVE_LOW>;	//RECOVER_IN10	PCA9555	IO_13
+			default-state = "off";
+			retain-state-shutdown;
+		};
+	};
+
+};
+
+
+&cru {
+		assigned-clock-rates =
+			 <75000000>, <50000000>,
+			 <50000000>, <50000000>,
+			 <50000000>, <100000000>,
+			 <50000000>, <150000000>,
+			 <150000000>, <150000000>,
+			 <50000000>, <150000000>,
+			 <50000000>, <100000000>,
+			 <75000000>, <75000000>,
+			 <816000000>, <816000000>,
+			 <500000000>, <200000000>,
+			 <800000000>, <150000000>,
+			 <75000000>, <37500000>,
+			 <300000000>, <100000000>,
+			 <50000000>, <100000000>,
+			 <50000000>, <100000000>,
+			 <100000000>, <100000000>,
+			 <100000000>, <100000000>,
+			 <100000000>, <50000000>,
+			 <50000000>, <50000000>,
+			 <50000000>, <50000000>,
+			 <200000000>, <400000000>,
+			 <400000000>, <100000000>,
+			 <100000000>, <100000000>,
+			 <400000000>, <400000000>,
+			 <200000000>, <100000000>,
+			 <200000000>, <200000000>,
+			 <100000000>, <400000000>,
+			 <400000000>, <400000000>,
+			 <400000000>, <300000000>,
+			 <400000000>, <200000000>,
+			 <400000000>, <300000000>,
+			 <300000000>, <300000000>,
+			 <300000000>, <600000000>,/* aclk_cci */
+			 <100000000>, <150000000>,
+			 <150000000>, <400000000>,
+			 <100000000>, <400000000>,
+			 <100000000>;
+};
+
+
+&pwm3 {
+	status = "disabled";
+};
+
+&sdio0 {
+	status = "disabled";
+};
+
+&sdio_pwrseq {
+	status = "disabled";
+};
+
+&i2s0 {
+	status = "disabled";
+};
+
+&i2s1 {
+	status = "disabled";
+};
+
+&sdmmc {
+	status = "disabled";
+};
+
+&rt5640 {
+	status = "disabled";
+};
+
+/* rtc */
+&rk808{
+	/delete-property/ pmic,stby-gpio;
+	/delete-property/ rockchip,system-power-controller;
+	/delete-property/ pmic,hold-gpio;
+	pinctrl-0 = <&pmic_int_l &pmic_dvs2 &pmic_hold>;
+	rtc {
+		status = "disabled";
+	};
+};
+
+//pcie0 reset port
+&pcie0 {
+	ep-gpios = <&gpio1 4 GPIO_ACTIVE_HIGH>;
+	/delete-property/pinctrl-names;
+	/delete-property/pinctrl-0;
+	max-link-speed = <2>;
+};
+
+&pcie_phy {
+    status = "okay";
+};
+
+&vcc3v3_pcie {
+    status = "okay";
+    gpio = <&gpio1 4 GPIO_ACTIVE_HIGH>;
+};
+
+&i2c4 {
+	status = "disabled";
+};
+
+&i2c1 {
+	status = "okay";
+	hym8563: hym8563@51 {
+		compatible = "haoyu,hym8563";
+		reg = <0x51>;
+		interrupt-parent = <&gpio3>;
+		interrupts = <31 IRQ_TYPE_EDGE_FALLING>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&rtc_int>;
+		#clock-cells = <0>;
+		clock-frequency = <32768>;
+		clock-output-names = "xin32k";
+	};
+
+
+
+	sensor@3c {
+		 status = "okay";
+		 compatible = "firefly,pc9202";
+		 sw-gpio = <&gpio4 21 GPIO_ACTIVE_HIGH>;
+	         pinctrl-names = "default";
+	         pinctrl-0 = <&wdt_ctl>;
+		 reg = <0x3c>;
+	};
+
+};
+
+/* Usb 5v */
+
+&vcc5v0_host {
+	gpio = <&gpio1 23 GPIO_ACTIVE_HIGH>;
+};
+
+&host_vbus_drv {
+	rockchip,pins = <1 23 RK_FUNC_GPIO &pcfg_pull_none>;
+};
+
+/* Mini pcie 4G */
+
+&vcc3v3_3g {
+	gpio = <&gpio3 28 GPIO_ACTIVE_HIGH>;
+};
+
+&pcie_3g_drv {
+	rockchip,pins = <3 28 RK_FUNC_GPIO &pcfg_pull_up>;
+};
+
+&spi1 {
+	status = "okay";
+	max-freq = <48000000>;
+	dev-port = <0>;
+
+	spidev0: spidev@00 {
+		status = "okay";
+		//compatible = "linux,spidev";
+		compatible = "jedec,spi-nor";
+		reg = <0x00>;
+		spi-max-frequency = <48000000>;
+	};
+/*
+       spi_demo: spi-demo@00{
+              status = "okay";
+              compatible = "firefly,rk3399-spi";
+              reg = <0x00>;
+              spi-max-frequency = <48000000>;
+*/
+/* rk3399 driver support SPI_CPOL | SPI_CPHA | SPI_CS_HIGH */
+              //spi-cpha;             /* SPI mode: CPHA=1 */
+              //spi-cpol;     /* SPI mode: CPOL=1 */
+              //spi-cs-high;
+//      };
+};
+
+
+&gmac {
+	tx_delay = <0x2c>;
+	rx_delay = <0x28>;
+	clock_in_out = "output";
+	clk_alway_enable = "true";
+	assigned-clocks = <&cru SCLK_MAC>, <&cru SCLK_RMII_SRC>;
+	assigned-clock-rates = <0>, <125000000>;
+	assigned-clock-parents = <&cru PLL_NPLL>, <&cru SCLK_MAC>;
+};
+
+&hdmi_dp_sound {
+	status = "okay";
+};
+
+&i2c2 {
+	status = "disabled";
+	i2c-scl-rising-time-ns = <300>;
+	i2c-scl-falling-time-ns = <15>;
+};
+
+&i2c6 {
+	status = "disabled";
+	i2c-scl-rising-time-ns = <300>;
+	i2c-scl-falling-time-ns = <15>;
+	clock-frequency = <PCA955_I2C_CLK>;
+
+	sub_core_pca9555: gpio@27 {
+		status = "disabled";
+		compatible = "nxp,pca9555";
+		reg = <0x27>;
+		gpio-controller;
+		#gpio-cells = <2>;
+		gpio-group-num = <250>;
+		label = "sub";
+	};
+};
+
+&vcca1v8_codec {
+	regulator-min-microvolt = <900000>;
+	regulator-max-microvolt = <900000>;
+};
+
+
+
+
+&vcc3v3_pcie {
+	/delete-property/ gpio;
+};
+
+
+
+&uart4 {
+    status = "disabled";
+};
+
+&dp_in_vopb {
+	status = "disabled";
+};
+
+&hdmi_in_vopl {
+	status = "disabled";
+};
+
+&wdt {
+	status = "disabled";
+};
+
+&io_domains {
+	bt656-supply = <&vcc_3v0>;
+};
+
+&vcc2v8_dvp {
+	regulator-min-microvolt = <1800000>;
+	regulator-max-microvolt = <1800000>;
+};
+
+&vcca1v8_codec {
+	regulator-min-microvolt = <900000>;
+	regulator-max-microvolt = <900000>;
+};
+
+
+&fusb0 {
+    status = "disabled";
+};
+
+&cdn_dp {
+    status = "disabled";
+};
+
+&tcphy0 {
+    /delete-property/ extcon;
+    status = "okay";
+};
+
+&tcphy1 {
+    /delete-property/ extcon;
+    status = "okay";
+};
+
+&u2phy0 {
+    status = "okay";
+    /delete-property/ extcon;
+
+    u2phy0_otg: otg-port {
+        status = "okay";
+    };
+};
+
+&u2phy1 {
+    status = "okay";
+    /delete-property/ extcon;
+
+    u2phy1_otg: otg-port {
+	firefly,vbus-no-det; //set typec peripheral mode when det pin not connect
+        status = "okay";
+    };
+};
+
+&usbdrd3_0 {
+    status = "okay";
+    /delete-property/ extcon;
+};
+
+&usbdrd_dwc3_0 {
+    dr_mode = "host";
+};
+
+&usbdrd3_1 {
+    status = "okay";
+};
+
+&usbdrd_dwc3_1 {
+    dr_mode = "host";
+    status = "okay";
+};
+
+&route_hdmi {
+	status = "okay";
+};
+
+&rk808 {
+     /delete-property/ pmic,stby-gpio;
+     /delete-property/ pmic,hold-gpio;
+};
+
+&pinctrl {
+	hym8563 {
+		rtc_int: rtc-int {
+			rockchip,pins = <RK_GPIO3 31 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+
+	pca9555 {
+		pca9555_rst_pin: pca9555-rst-pin {
+			rockchip,pins = <RK_GPIO2 3 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+
+	adb {
+		adb_sel: adb-sel {
+			rockchip,pins = <RK_GPIO1 24 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+
+	sata {
+		sata_sel: sata-sel {
+			rockchip,pins = <RK_GPIO1 1 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+
+	wdt-pin {
+       		wdt_pwr_pin: wdt-pwr-pin {
+                       rockchip,pins = <RK_GPIO1 11 RK_FUNC_GPIO &pcfg_pull_up>;
+                };
+
+       		wdt_ctl: wdt-ctl {
+                       rockchip,pins = <RK_GPIO4 21 RK_FUNC_GPIO &pcfg_pull_up>;
+                };
+
+       };
+
+       usb_net_pwr {
+       		usb_net_ctl: usb-net-ctl {
+                       rockchip,pins = <RK_GPIO4 0 RK_FUNC_GPIO &pcfg_pull_up>;
+               };
+       };
+
+};
+
